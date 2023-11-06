@@ -21,6 +21,7 @@ interface BillingFormProps {
 
 const BillingForm = ({ subscriptionPlan }: BillingFormProps) => {
   const { toast } = useToast()
+
   const { mutate: createStripeSession, isLoading } =
     trpc.createStripeSession.useMutation({
       onSuccess: ({ url }) => {
@@ -69,6 +70,7 @@ const BillingForm = ({ subscriptionPlan }: BillingFormProps) => {
                   ? 'Your plan will be canceled on '
                   : 'Your plan renews on'}
                 {format(subscriptionPlan.stripeCurrentPeriodEnd!, 'dd.MM.yyyy')}
+                .
               </p>
             ) : null}
           </CardFooter>
