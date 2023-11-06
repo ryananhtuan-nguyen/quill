@@ -5,13 +5,11 @@ import { redirect } from 'next/navigation'
 
 const Page = async () => {
   const { getUser } = getKindeServerSession()
-  const user = getUser()
-  //@ts-expect-error
+  const user = await getUser()
   if (!user || !user.id) redirect('/auth-callback?origin=dashboard')
 
   const dbUser = await db.user.findFirst({
     where: {
-      //@ts-expect-error
       id: user.id,
     },
   })
