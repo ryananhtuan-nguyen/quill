@@ -1,16 +1,15 @@
 import { cn } from '@/libs/utils'
 import { ExtendedMessage } from '@/types/message'
-import React, { forwardRef } from 'react'
 import { Icons } from '../Icons'
 import ReactMarkdown from 'react-markdown'
 import { format } from 'date-fns'
+import { forwardRef } from 'react'
 
 interface MessageProps {
   message: ExtendedMessage
   isNextMessageSamePerson: boolean
 }
 
-// eslint-disable-next-line react/display-name
 const Message = forwardRef<HTMLDivElement, MessageProps>(
   ({ message, isNextMessageSamePerson }, ref) => {
     return (
@@ -48,7 +47,7 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(
               'bg-blue-600 text-white': message.isUserMessage,
               'bg-gray-200 text-gray-900': !message.isUserMessage,
               'rounded-br-none':
-                !message.isUserMessage && !isNextMessageSamePerson,
+                !isNextMessageSamePerson && message.isUserMessage,
               'rounded-bl-none':
                 !isNextMessageSamePerson && !message.isUserMessage,
             })}
@@ -71,7 +70,7 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(
                   'text-blue-300': message.isUserMessage,
                 })}
               >
-                {format(new Date(message.createdAt), 'HH:mm ')}
+                {format(new Date(message.createdAt), 'HH:mm')}
               </div>
             ) : null}
           </div>
@@ -80,5 +79,7 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(
     )
   }
 )
+
+Message.displayName = 'Message'
 
 export default Message
