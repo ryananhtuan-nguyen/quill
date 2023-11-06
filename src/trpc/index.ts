@@ -4,7 +4,16 @@ import { TRPCError } from '@trpc/server'
 import { db } from '@/db'
 import { z } from 'zod'
 import { INFINITE_QUERY_LIMIT } from '@/config/infinite-query'
+import { absoluteUrl } from '@/libs/utils'
+import { getUserSubscriptionPlan, stripe } from '@/libs/stripe'
+import { PLANS } from '@/config/stripe'
 export const appRouter = router({
+  //------------------------------------------------------
+  //------------------------------------------------------
+  //AuthCallback route----------------------------------
+  //------------------------------------------------------
+  //------------------------------------------------------
+
   authCallback: publicProcedure.query(async () => {
     const { getUser } = getKindeServerSession()
     const user = await getUser()
@@ -31,6 +40,13 @@ export const appRouter = router({
 
     return { success: true }
   }),
+
+  //------------------------------------------------------
+  //------------------------------------------------------
+  //getUserFIles-----------------------------------------
+  //------------------------------------------------------
+  //------------------------------------------------------
+
   getUserFiles: privateProcedure.query(async ({ ctx }) => {
     const { userId } = ctx
     return await db.file.findMany({
@@ -39,6 +55,71 @@ export const appRouter = router({
       },
     })
   }),
+
+  //------------------------------------------------------
+  //------------------------------------------------------
+  //createStripeSession---------------------------------
+  //------------------------------------------------------
+  //------------------------------------------------------
+
+  createStripeSession: privateProcedure.mutation(async ({ ctx }) => {
+    const { userId } = ctx
+
+    //setup billing url
+    const billingUrl = absoluteUrl('/dashboard/billing')
+
+    //if no user (user not logged in) throw error
+    if (!userId) throw new TRPCError({ code: 'UNAUTHORIZED' })
+
+    //find user in db
+    const dbUser = await db.user.findFirst({
+      where: {
+        id: userId,
+      },
+    })
+
+    //if no user (user not in database) throw error
+    if (!dbUser) throw new TRPCError({ code: 'UNAUTHORIZED' })
+
+    //check if user is on subscription
+
+    const subscriptionPlan = await getUserSubscriptionPlan()
+    if (subscriptionPlan.isSubscribed && dbUser.stripeCustomerId) {
+      const stripeSession = await stripe.billingPortal.sessions.create({
+        customer: dbUser.stripeCustomerId,
+        return_url: billingUrl,
+      })
+      return { url: stripeSession.url }
+    }
+
+    //if user not subscribed
+
+    const stripeSession = await stripe.checkout.sessions.create({
+      success_url: billingUrl,
+      cancel_url: billingUrl,
+      payment_method_types: ['card', 'paypal'],
+      mode: 'subscription',
+      billing_address_collection: 'auto',
+      line_items: [
+        {
+          price: PLANS.find((p) => p.name === 'Pro')?.price.priceIds.test,
+          quantity: 1,
+        },
+      ],
+      metadata: {
+        userId: userId,
+      },
+    })
+
+    return { url: stripeSession.url }
+  }),
+
+  //------------------------------------------------------
+  //------------------------------------------------------
+  //getFileMessages------------------------------------
+  //------------------------------------------------------
+  //------------------------------------------------------
+
   getFileMessages: privateProcedure
     .input(
       z.object({
@@ -90,6 +171,13 @@ export const appRouter = router({
         nextCursor,
       }
     }),
+
+  //------------------------------------------------------
+  //------------------------------------------------------
+  //getFileupload Status--------------------------------
+  //------------------------------------------------------
+  //------------------------------------------------------
+
   getFileUploadStatus: privateProcedure
     .input(z.object({ fileId: z.string() }))
     .query(async ({ input, ctx }) => {
@@ -103,6 +191,13 @@ export const appRouter = router({
       if (!file) return { status: 'PENDING' as const }
       return { status: file.uploadStatus }
     }),
+
+  //------------------------------------------------------
+  //------------------------------------------------------
+  //getFile-----------------------------------------------
+  //------------------------------------------------------
+  //------------------------------------------------------
+
   getFile: privateProcedure
     .input(z.object({ key: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -119,6 +214,12 @@ export const appRouter = router({
 
       return file
     }),
+
+  //------------------------------------------------------
+  //------------------------------------------------------
+  //DeleteFile-------------------------------------------
+  //------------------------------------------------------
+  //------------------------------------------------------
   deleteFile: privateProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
