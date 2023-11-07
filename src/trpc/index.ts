@@ -2,7 +2,7 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { privateProcedure, publicProcedure, router } from './trpc'
 import { TRPCError } from '@trpc/server'
 import { db } from '@/db'
-import z from 'zod'
+import { z } from 'zod'
 import { INFINITE_QUERY_LIMIT } from '@/config/infinite-query'
 import { absoluteUrl } from '@/libs/utils'
 import { getUserSubscriptionPlan, stripe } from '@/libs/stripe'
@@ -151,9 +151,8 @@ export const appRouter = router({
         },
       })
 
-      if (!file) {
-        return { status: 'PENDING' as const }
-      }
+      if (!file) return { status: 'PENDING' as const }
+
       return { status: file.uploadStatus }
     }),
 
