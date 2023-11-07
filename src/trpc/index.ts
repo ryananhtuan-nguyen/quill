@@ -2,7 +2,7 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { privateProcedure, publicProcedure, router } from './trpc'
 import { TRPCError } from '@trpc/server'
 import { db } from '@/db'
-import { z } from 'zod'
+import z from 'zod'
 import { INFINITE_QUERY_LIMIT } from '@/config/infinite-query'
 import { absoluteUrl } from '@/libs/utils'
 import { getUserSubscriptionPlan, stripe } from '@/libs/stripe'
@@ -144,9 +144,6 @@ export const appRouter = router({
   getFileUploadStatus: privateProcedure
     .input(z.object({ fileId: z.string() }))
     .query(async ({ input, ctx }) => {
-      console.log('Hello world')
-      console.log('this is input', input)
-      console.log('this is ctx', ctx)
       const file = await db.file.findFirst({
         where: {
           id: input.fileId,
