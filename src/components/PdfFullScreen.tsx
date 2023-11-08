@@ -1,33 +1,35 @@
-'use client'
-
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
 import { Button } from './ui/button'
 import { Expand, Loader2 } from 'lucide-react'
 import SimpleBar from 'simplebar-react'
-import { useToast } from './ui/use-toast'
 import { Document, Page } from 'react-pdf'
+import { useToast } from './ui/use-toast'
 import { useResizeDetector } from 'react-resize-detector'
 
 interface PdfFullscreenProps {
   fileUrl: string
 }
 
-const PdfFullScreen = ({ fileUrl }: PdfFullscreenProps) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false)
+const PdfFullscreen = ({ fileUrl }: PdfFullscreenProps) => {
+  const [isOpen, setIsOpen] = useState(false)
   const [numPages, setNumPages] = useState<number>()
-  const { width, ref } = useResizeDetector()
+
   const { toast } = useToast()
+
+  const { width, ref } = useResizeDetector()
 
   return (
     <Dialog
       open={isOpen}
       onOpenChange={(v) => {
-        if (!v) setIsOpen(v)
+        if (!v) {
+          setIsOpen(v)
+        }
       }}
     >
       <DialogTrigger onClick={() => setIsOpen(true)} asChild>
-        <Button aria-label="fullscreen" variant="ghost">
+        <Button variant="ghost" className="gap-1.5" aria-label="fullscreen">
           <Expand className="h-4 w-4" />
         </Button>
       </DialogTrigger>
@@ -47,11 +49,9 @@ const PdfFullScreen = ({ fileUrl }: PdfFullscreenProps) => {
                   variant: 'destructive',
                 })
               }}
-              onLoadSuccess={({ numPages }) => {
-                setNumPages(numPages)
-              }}
-              className="max-h-full"
+              onLoadSuccess={({ numPages }) => setNumPages(numPages)}
               file={fileUrl}
+              className="max-h-full"
             >
               {new Array(numPages).fill(0).map((_, i) => (
                 <Page key={i} width={width ? width : 1} pageNumber={i + 1} />
@@ -64,4 +64,4 @@ const PdfFullScreen = ({ fileUrl }: PdfFullscreenProps) => {
   )
 }
 
-export default PdfFullScreen
+export default PdfFullscreen
