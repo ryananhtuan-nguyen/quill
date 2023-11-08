@@ -32,7 +32,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
  - Database used: planetscale - mysql database
  - clsx and tailwindmerge: for better className handling in next and react
  - File upload: uploadthing hosting
- - langchain: vectorize text to provide answer with AI
+ - langchain and pinecone: vectorize text to provide answer with AI
  - openai: realtime chat with AI
  - React toast: better UI notification
  - shadcn & lucide : UI Libraries with premade components for better look
