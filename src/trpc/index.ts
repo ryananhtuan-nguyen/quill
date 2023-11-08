@@ -10,7 +10,6 @@ import { PLANS } from '@/config/stripe'
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
-    console.log('Hello World')
     const { getUser } = getKindeServerSession()
     const user = await getUser()
 
@@ -151,7 +150,6 @@ export const appRouter = router({
           userId: ctx.userId,
         },
       })
-
       if (!file) return { status: 'PENDING' as const }
 
       return { status: file.uploadStatus }
@@ -196,6 +194,10 @@ export const appRouter = router({
 
       return file
     }),
+
+  testRoute: publicProcedure.query(async () => {
+    return 'Hello world'
+  }),
 })
 
 export type AppRouter = typeof appRouter
