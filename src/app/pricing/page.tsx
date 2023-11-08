@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/tooltip'
 import { PLANS } from '@/config/stripe'
 import { cn } from '@/libs/utils'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/dist/server'
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { ArrowRight, Check, HelpCircle, Minus } from 'lucide-react'
 import Link from 'next/link'
 
@@ -78,12 +78,12 @@ const Page = async () => {
         <div className="mx-auto mb-10 sm:max-w-lg">
           <h1 className="text-6xl font-bold sm:text-7xl">Pricing</h1>
           <p className="mt-5 text-gray-600 sm:text-lg">
-            Whether you &apos;re just trying out our service or need more,
-            we&apos;ve got you covered
+            Whether you&apos;re just trying out our service or need more,
+            we&apos;ve got you covered.
           </p>
         </div>
 
-        <div className="pt-12 grid gird-cols-1 gap-10 lg:grid-cols-2">
+        <div className="pt-12 grid grid-cols-1 gap-10 lg:grid-cols-2">
           <TooltipProvider>
             {pricingItems.map(({ plan, tagline, quota, features }) => {
               const price =
@@ -116,8 +116,9 @@ const Page = async () => {
                   </div>
 
                   <div className="flex h-20 items-center justify-center border-b border-t border-gray-200 bg-gray-50">
-                    <div className="flex item-center space-x-1">
+                    <div className="flex items-center space-x-1">
                       <p>{quota.toLocaleString()} PDFs/mo included</p>
+
                       <Tooltip delayDuration={300}>
                         <TooltipTrigger className="cursor-default ml-1.5">
                           <HelpCircle className="h-4 w-4 text-zinc-500" />
@@ -128,6 +129,7 @@ const Page = async () => {
                       </Tooltip>
                     </div>
                   </div>
+
                   <ul className="my-10 space-y-5 px-8">
                     {features.map(({ text, footnote, negative }) => (
                       <li key={text} className="flex space-x-5">
@@ -141,8 +143,8 @@ const Page = async () => {
                         {footnote ? (
                           <div className="flex items-center space-x-1">
                             <p
-                              className={cn('text-gray-400', {
-                                'text-gray-600': negative,
+                              className={cn('text-gray-600', {
+                                'text-gray-400': negative,
                               })}
                             >
                               {text}
@@ -158,8 +160,8 @@ const Page = async () => {
                           </div>
                         ) : (
                           <p
-                            className={cn('text-gray-400', {
-                              'text-gray-600': negative,
+                            className={cn('text-gray-600', {
+                              'text-gray-400': negative,
                             })}
                           >
                             {text}
@@ -186,7 +188,9 @@ const Page = async () => {
                     ) : (
                       <Link
                         href="/sign-in"
-                        className={buttonVariants({ className: 'w-full' })}
+                        className={buttonVariants({
+                          className: 'w-full',
+                        })}
                       >
                         {user ? 'Upgrade now' : 'Sign up'}
                         <ArrowRight className="h-5 w-5 ml-1.5" />
