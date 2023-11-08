@@ -10,6 +10,7 @@ import { PLANS } from '@/config/stripe'
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
+    console.log('Hello World')
     const { getUser } = getKindeServerSession()
     const user = await getUser()
 
@@ -73,7 +74,7 @@ export const appRouter = router({
     const stripeSession = await stripe.checkout.sessions.create({
       success_url: billingUrl,
       cancel_url: billingUrl,
-      payment_method_types: ['card', 'paypal'],
+      payment_method_types: ['card'],
       mode: 'subscription',
       billing_address_collection: 'auto',
       line_items: [
