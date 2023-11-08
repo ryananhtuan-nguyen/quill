@@ -52,4 +52,4 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
  ```
 
  Currently having problem with database connecting to Vercel. Any questions or query please leave message 
- (Also if you want to try it out currently)
+ The app is currently working in development (not production ready just yet but soon)
