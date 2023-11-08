@@ -33,6 +33,7 @@ const onUploadComplete = async ({
     url: string
   }
 }) => {
+  console.log(metadata)
   const isFileExist = await db.file.findFirst({
     where: {
       key: file.key,
@@ -50,7 +51,7 @@ const onUploadComplete = async ({
       uploadStatus: 'PROCESSING',
     },
   })
-
+  console.log(createdFile)
   try {
     const response = await fetch(
       `https://uploadthing-prod.s3.us-west-2.amazonaws.com/${file.key}`
