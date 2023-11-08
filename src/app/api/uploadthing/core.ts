@@ -1,10 +1,11 @@
 import { db } from '@/db'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/dist/server'
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { createUploadthing, type FileRouter } from 'uploadthing/next'
+
 import { PDFLoader } from 'langchain/document_loaders/fs/pdf'
-import { pinecone } from '@/libs/pinecone'
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
 import { PineconeStore } from 'langchain/vectorstores/pinecone'
+import { pinecone } from '@/libs/pinecone'
 import { getUserSubscriptionPlan } from '@/libs/stripe'
 import { PLANS } from '@/config/stripe'
 
@@ -14,7 +15,7 @@ const middleware = async () => {
   const { getUser } = getKindeServerSession()
   const user = await getUser()
 
-  if (!user || !user.id) throw new Error('UNAUTHORIZED')
+  if (!user || !user.id) throw new Error('Unauthorized')
 
   const subscriptionPlan = await getUserSubscriptionPlan()
 
@@ -49,10 +50,12 @@ const onUploadComplete = async ({
       uploadStatus: 'PROCESSING',
     },
   })
+
   try {
     const response = await fetch(
       `https://uploadthing-prod.s3.us-west-2.amazonaws.com/${file.key}`
     )
+
     const blob = await response.blob()
 
     const loader = new PDFLoader(blob)
@@ -79,15 +82,17 @@ const onUploadComplete = async ({
         },
       })
     }
-    //vectorize and index entire document
 
+    // vectorize and index entire document
     const pineconeIndex = pinecone.Index('quill')
+
     const embeddings = new OpenAIEmbeddings({
       openAIApiKey: process.env.OPENAI_API_KEY,
     })
 
     await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {
       pineconeIndex,
+      // namespace: createdFile.id,
     })
 
     await db.file.update({
@@ -99,7 +104,6 @@ const onUploadComplete = async ({
       },
     })
   } catch (err) {
-    console.log(err)
     await db.file.update({
       data: {
         uploadStatus: 'FAILED',
@@ -110,7 +114,7 @@ const onUploadComplete = async ({
     })
   }
 }
-// FileRouter for your app, can contain multiple FileRoutes
+
 export const ourFileRouter = {
   freePlanUploader: f({ pdf: { maxFileSize: '4MB' } })
     .middleware(middleware)
