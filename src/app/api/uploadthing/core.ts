@@ -15,7 +15,7 @@ const middleware = async () => {
   const { getUser } = getKindeServerSession()
   const user = await getUser()
 
-  if (!user || !user?.id) throw new Error('Unauthorized')
+  if (!user || !user.id) throw new Error('Unauthorized')
 
   const subscriptionPlan = await getUserSubscriptionPlan()
 
@@ -33,18 +33,13 @@ const onUploadComplete = async ({
     url: string
   }
 }) => {
-  console.log(metadata)
   const isFileExist = await db.file.findFirst({
     where: {
       key: file.key,
     },
   })
 
-  if (isFileExist) {
-    return
-  }
-
-console.log("Ok file is not exist, now start writing in db")
+  if (isFileExist) return
 
   const createdFile = await db.file.create({
     data: {
@@ -55,7 +50,7 @@ console.log("Ok file is not exist, now start writing in db")
       uploadStatus: 'PROCESSING',
     },
   })
-  console.log("File created:", createdFile)
+
   try {
     const response = await fetch(
       `https://uploadthing-prod.s3.us-west-2.amazonaws.com/${file.key}`
@@ -86,7 +81,6 @@ console.log("Ok file is not exist, now start writing in db")
           id: createdFile.id,
         },
       })
-    console.log("Failed uploading because of plan")
     }
 
     // vectorize and index entire document
@@ -109,8 +103,6 @@ console.log("Ok file is not exist, now start writing in db")
         id: createdFile.id,
       },
     })
-
-    console.log("File successfully uploaded")
   } catch (err) {
     await db.file.update({
       data: {
