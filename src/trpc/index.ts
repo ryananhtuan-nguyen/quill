@@ -160,14 +160,13 @@ export const appRouter = router({
     .input(z.object({ key: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { userId } = ctx
-
+      console.log(input, userId, 'console.log from here')
       const file = await db.file.findFirst({
         where: {
           key: input.key,
           userId,
         },
       })
-
       if (!file) throw new TRPCError({ code: 'NOT_FOUND' })
 
       return file

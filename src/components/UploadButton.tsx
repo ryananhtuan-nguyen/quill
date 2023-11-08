@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
 import { Button } from './ui/button'
 
@@ -26,6 +26,12 @@ const UploadDropzone = ({ isSubscribed }: { isSubscribed: boolean }) => {
   const { mutate: startPolling } = trpc.getFile.useMutation({
     onSuccess: (file) => {
       router.push(`/dashboard/${file.id}`)
+    },
+    onError: () => {
+      router.refresh()
+    },
+    onSettled: () => {
+      router.refresh()
     },
     retry: true,
     retryDelay: 500,
@@ -80,7 +86,6 @@ const UploadDropzone = ({ isSubscribed }: { isSubscribed: boolean }) => {
 
         clearInterval(progressInterval)
         setUploadProgress(100)
-
         startPolling({ key })
       }}
     >
