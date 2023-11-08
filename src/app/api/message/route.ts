@@ -2,38 +2,36 @@ import { db } from '@/db'
 import { openai } from '@/libs/openai'
 import { pinecone } from '@/libs/pinecone'
 import { SendMessageValidator } from '@/libs/validators/SendMessageValidator'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/dist/server'
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
 import { PineconeStore } from 'langchain/vectorstores/pinecone'
 import { NextRequest } from 'next/server'
+
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 
 export const POST = async (req: NextRequest) => {
-  //endpoint for asking a question to a pdf file
+  // endpoint for asking a question to a pdf file
 
-  //get body of the request and current user
   const body = await req.json()
+
   const { getUser } = getKindeServerSession()
   const user = await getUser()
 
-  //validate user
   const { id: userId } = user
-  if (!userId) return new Response('UNAUTHORIZE', { status: 401 })
 
-  //validate input / questions
+  if (!userId) return new Response('Unauthorized', { status: 401 })
+
   const { fileId, message } = SendMessageValidator.parse(body)
 
-  //validate file in db
   const file = await db.file.findFirst({
     where: {
       id: fileId,
       userId,
     },
   })
-  //if theres no file throw error not found
+
   if (!file) return new Response('Not found', { status: 404 })
 
-  //create the message in db
   await db.message.create({
     data: {
       text: message,
@@ -43,15 +41,16 @@ export const POST = async (req: NextRequest) => {
     },
   })
 
-  // todo : AI
-  //1:vectorize message
+  // 1: vectorize message
   const embeddings = new OpenAIEmbeddings({
-    openAIApiKey: process.env.OPEN_API_KEY,
+    openAIApiKey: process.env.OPENAI_API_KEY,
   })
 
   const pineconeIndex = pinecone.Index('quill')
+
   const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
     pineconeIndex,
+    // namespace: file.id,
   })
 
   const results = await vectorStore.similaritySearch(message, 4)
