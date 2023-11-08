@@ -24,6 +24,8 @@ const ChatWrapper = ({ fileId, isSubscribed }: ChatWrapperProps) => {
         data?.status === 'SUCCESS' || data?.status === 'FAILED' ? false : 500,
     }
   )
+  // const { data: newUser } = trpc.testRoute.useQuery()
+  // console.log(newUser, 'user here')
   // console.log('data', data, 'is loading?', isLoading, 'fileid', fileId)
   if (isLoading)
     return (
