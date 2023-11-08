@@ -1,4 +1,4 @@
-import clsx, { ClassValue } from 'clsx'
+import { type ClassValue, clsx } from 'clsx'
 import { Metadata } from 'next'
 import { twMerge } from 'tailwind-merge'
 
@@ -36,13 +36,6 @@ export function constructMetadata({
           url: image,
         },
       ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: [image],
-      creator: '@ryan',
     },
     icons,
     metadataBase: new URL('https://quill-sooty-zeta.vercel.app'),
