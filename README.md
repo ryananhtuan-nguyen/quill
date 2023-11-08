@@ -45,3 +45,11 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
  - As an user, you will be able to upload your own pdf file and chat with AI about the content.
  - Effective for learning, specially when lost of skim & scan needed.
  - If you are not a fan of AI, this can act as an pdf uploader to keep your pdf safe and secure.
+
+ ## Online:
+ ```
+ https://quill-sooty-zeta.vercel.app/dashboard
+ ```
+
+ Currently having problem with database connecting to Vercel. Any questions or query please leave message 
+ (Also if you want to try it out currently)
