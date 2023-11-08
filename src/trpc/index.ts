@@ -73,7 +73,7 @@ export const appRouter = router({
     const stripeSession = await stripe.checkout.sessions.create({
       success_url: billingUrl,
       cancel_url: billingUrl,
-      payment_method_types: ['card'],
+      payment_method_types: ['card', 'paypal'],
       mode: 'subscription',
       billing_address_collection: 'auto',
       line_items: [
@@ -150,6 +150,7 @@ export const appRouter = router({
           userId: ctx.userId,
         },
       })
+
       if (!file) return { status: 'PENDING' as const }
 
       return { status: file.uploadStatus }
@@ -194,10 +195,6 @@ export const appRouter = router({
 
       return file
     }),
-
-  testRoute: publicProcedure.query(async () => {
-    return 'Hello world'
-  }),
 })
 
 export type AppRouter = typeof appRouter
