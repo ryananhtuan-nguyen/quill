@@ -15,11 +15,11 @@ const middleware = async () => {
   const { getUser } = getKindeServerSession()
   const user = await getUser()
 
-  if (!user || !user.id) throw new Error('Unauthorized')
+  // if (!user || !user.id) throw new Error('Unauthorized')
 
   const subscriptionPlan = await getUserSubscriptionPlan()
 
-  return { subscriptionPlan, userId: user.id }
+  return { subscriptionPlan, userId: user.id || null }
 }
 
 const onUploadComplete = async ({
@@ -42,11 +42,14 @@ const onUploadComplete = async ({
 
   if (isFileExist) return
 
+  const { getUser } = getKindeServerSession()
+  const user = await getUser()
+
   const createdFile = await db.file.create({
     data: {
       key: file.key,
       name: file.name,
-      userId: metadata.userId,
+      userId: user.id || metadata.userId,
       url: `https://uploadthing-prod.s3.us-west-2.amazonaws.com/${file.key}`,
       uploadStatus: 'PROCESSING',
     },
