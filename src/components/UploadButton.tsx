@@ -1,9 +1,10 @@
 'use client'
 
-import Dropzone from 'react-dropzone'
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
 import { Button } from './ui/button'
+
+import Dropzone from 'react-dropzone'
 import { Cloud, File, Loader2 } from 'lucide-react'
 import { Progress } from './ui/progress'
 import { useUploadThing } from '@/libs/uploadthing'
@@ -13,9 +14,11 @@ import { useRouter } from 'next/navigation'
 
 const UploadDropzone = ({ isSubscribed }: { isSubscribed: boolean }) => {
   const router = useRouter()
+
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [uploadProgress, setUploadProgress] = useState<number>(0)
   const { toast } = useToast()
+
   const { startUpload } = useUploadThing(
     isSubscribed ? 'proPlanUploader' : 'freePlanUploader'
   )
@@ -40,6 +43,7 @@ const UploadDropzone = ({ isSubscribed }: { isSubscribed: boolean }) => {
         return prevProgress + 5
       })
     }, 500)
+
     return interval
   }
 
@@ -51,8 +55,9 @@ const UploadDropzone = ({ isSubscribed }: { isSubscribed: boolean }) => {
 
         const progressInterval = startSimulatedProgress()
 
-        //handle file uploading
+        // handle file uploading
         const res = await startUpload(acceptedFile)
+
         if (!res) {
           return toast({
             title: 'Something went wrong',
@@ -63,7 +68,7 @@ const UploadDropzone = ({ isSubscribed }: { isSubscribed: boolean }) => {
 
         const [fileResponse] = res
 
-        const key = fileResponse.key
+        const key = fileResponse?.key
 
         if (!key) {
           return toast({
@@ -81,8 +86,8 @@ const UploadDropzone = ({ isSubscribed }: { isSubscribed: boolean }) => {
     >
       {({ getRootProps, getInputProps, acceptedFiles }) => (
         <div
-          className="border h-64 m-4 border-dashed border-gray-300 rounded-lg"
           {...getRootProps()}
+          className="border h-64 m-4 border-dashed border-gray-300 rounded-lg"
         >
           <div className="flex items-center justify-center h-full w-full">
             <label
@@ -99,6 +104,7 @@ const UploadDropzone = ({ isSubscribed }: { isSubscribed: boolean }) => {
                   PDF (up to {isSubscribed ? '16' : '4'}MB)
                 </p>
               </div>
+
               {acceptedFiles && acceptedFiles[0] ? (
                 <div className="max-w-xs bg-white flex items-center rounded-md overflow-hidden outline outline-[1px] outline-zinc-200 divide-x divide-zinc-200">
                   <div className="px-3 py-2 h-full grid place-items-center">
@@ -121,8 +127,8 @@ const UploadDropzone = ({ isSubscribed }: { isSubscribed: boolean }) => {
                   />
                   {uploadProgress === 100 ? (
                     <div className="flex gap-1 items-center justify-center text-sm text-zinc-700 text-center pt-2">
-                      <Loader2 className="h-3 w-3 animate-spin" /> Redirecting
-                      ...
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      Redirecting...
                     </div>
                   ) : null}
                 </div>
@@ -154,9 +160,10 @@ const UploadButton = ({ isSubscribed }: { isSubscribed: boolean }) => {
         }
       }}
     >
-      <DialogTrigger asChild onClick={() => setIsOpen(true)}>
+      <DialogTrigger onClick={() => setIsOpen(true)} asChild>
         <Button>Upload PDF</Button>
       </DialogTrigger>
+
       <DialogContent>
         <UploadDropzone isSubscribed={isSubscribed} />
       </DialogContent>
