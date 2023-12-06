@@ -92,7 +92,7 @@ const onUploadComplete = async ({
 
     await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {
       pineconeIndex,
-      // namespace: createdFile.id,
+      namespace: createdFile.id,
     })
 
     await db.file.update({
