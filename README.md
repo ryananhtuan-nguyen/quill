@@ -50,4 +50,3 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
  ```
  https://quill-sooty-zeta.vercel.app/dashboard
  ```
-Due to pinecone removing the free tier namespace search, the response from AI might not be accurate for the file chosen. Will update an alternate when theres one become available.
